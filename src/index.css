@@ -1,0 +1,424 @@
+/* ── Reset & Variables ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #0D1117;
+  --bg-panel:  #161B22;
+  --bg-card:   #1C2128;
+  --bg-hover:  #21262D;
+  --accent:    #58A6FF;
+  --green:     #3FB950;
+  --orange:    #F78166;
+  --purple:    #BC8CFF;
+  --yellow:    #E3B341;
+  --cyan:      #39D0D8;
+  --txt:       #E6EDF3;
+  --txt2:      #8B949E;
+  --txt3:      #484F58;
+  --border:    #30363D;
+  --visited:   #1A3A5C;
+  --path-col:  #F78166;
+  --start-col: #3FB950;
+  --goal-col:  #E3B341;
+  --wall-col:  #21262D;
+  --cell-col:  #161B22;
+  --font:      'Segoe UI', system-ui, sans-serif;
+  --mono:      'Consolas', 'Courier New', monospace;
+}
+html, body, #root { height: 100%; background: var(--bg); color: var(--txt); font-family: var(--font); font-size: 13px; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-panel); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── App Shell ───────────────────────────────────────────────────────────── */
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 220px; min-width: 220px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 16px; border-bottom: 1px solid var(--border);
+  font-size: 15px; font-weight: 700;
+}
+.sidebar-logo span { font-size: 22px; }
+.nav-section { padding: 10px 0 4px; }
+.nav-label {
+  padding: 4px 16px; font-size: 10px; font-weight: 700;
+  color: var(--txt3); letter-spacing: 2px; text-transform: uppercase;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 16px;
+  background: none; border: none; border-left: 3px solid transparent;
+  color: var(--txt2); font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: left; transition: all .15s;
+}
+.nav-btn:hover { background: var(--bg-hover); color: var(--txt); }
+.nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: #1F3A5F22; font-weight: 700; }
+.nav-btn .icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-footer { margin-top: auto; padding: 12px 16px; color: var(--txt3); font-size: 10px; font-family: var(--mono); }
+
+/* ── Main content ────────────────────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  height: 44px; min-height: 44px;
+  background: var(--bg-panel); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 10px;
+}
+.topbar-title { font-size: 14px; font-weight: 700; color: var(--txt); }
+.topbar-sub   { font-size: 11px; color: var(--txt2); }
+.page { flex: 1; overflow: auto; padding: 16px; }
+
+/* ── Module layout ───────────────────────────────────────────────────────── */
+.module { display: flex; gap: 16px; height: 100%; }
+.module-viz  { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.module-ctrl { width: 260px; min-width: 260px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Cards / panels ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.card-title { font-size: 11px; font-weight: 700; color: var(--txt2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+/* ── Stat row ────────────────────────────────────────────────────────────── */
+.stat-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px; min-width: 90px;
+}
+.stat-label { font-size: 10px; color: var(--txt2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.stat-value { font-size: 18px; font-weight: 700; }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+button { font-family: var(--font); cursor: pointer; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-hover); color: var(--txt);
+  transition: all .15s; white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:active { opacity: .8; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-primary { background: #1F6FEB; border-color: #1F6FEB; color: #fff; }
+.btn-primary:hover { background: #388BFD; border-color: #388BFD; color: #fff; }
+.btn-success { background: #238636; border-color: #238636; color: #fff; }
+.btn-success:hover { background: #2EA043; border-color: #2EA043; color: #fff; }
+.btn-danger  { background: #B91C1C; border-color: #B91C1C; color: #fff; }
+.btn-danger:hover  { background: #DC2626; border-color: #DC2626; color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-block { width: 100%; justify-content: center; }
+
+/* ── Form controls ───────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--txt2); }
+input[type=text], input[type=number], select, .inp {
+  background: var(--bg-hover); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--txt); font-family: var(--font); font-size: 12px;
+  padding: 6px 10px; width: 100%; outline: none; transition: border-color .15s;
+}
+input[type=text]:focus, input[type=number]:focus, select:focus { border-color: var(--accent); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select option { background: var(--bg-hover); }
+.row { display: flex; gap: 8px; align-items: center; }
+.row label { font-size: 11px; color: var(--txt2); white-space: nowrap; }
+
+/* ── Group box ───────────────────────────────────────────────────────────── */
+.grp {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; position: relative;
+}
+.grp-title {
+  position: absolute; top: -9px; left: 10px;
+  background: var(--bg); padding: 0 4px;
+  font-size: 10px; font-weight: 700; color: var(--txt2);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ── Canvas ──────────────────────────────────────────────────────────────── */
+canvas { display: block; border-radius: 8px; border: 1px solid var(--border); }
+.canvas-wrap { flex: 1; position: relative; min-height: 0; }
+.canvas-wrap canvas { width: 100%; height: 100%; }
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.tbl-wrap { overflow: auto; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--bg-hover); color: var(--txt2); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 8px 10px;
+  border-bottom: 1px solid var(--border); text-align: center;
+}
+tbody td { padding: 7px 10px; text-align: center; border-bottom: 1px solid #21262D; font-size: 12px; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg-hover); }
+tbody tr.unscheduled td { opacity: .6; }
+
+/* ── Puzzle grid ─────────────────────────────────────────────────────────── */
+.puzzle-grid { display: grid; gap: 6px; }
+.tile {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card); border: 2px solid var(--border);
+  border-radius: 10px; font-weight: 800; color: var(--purple);
+  cursor: pointer; transition: all .12s; user-select: none;
+}
+.tile:hover { background: var(--bg-hover); border-color: var(--purple); }
+.tile.blank { background: var(--bg); border-style: dashed; cursor: default; }
+.tile.solved { background: #1A3626; border-color: var(--green) !important; color: var(--green) !important; }
+
+/* ── Tictactoe ───────────────────────────────────────────────────────────── */
+
+/* ── SVG graph ───────────────────────────────────────────────────────────── */
+.graph-svg { width: 100%; height: 100%; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); }
+
+/* ── Dashboard ───────────────────────────────────────────────────────────── */
+.dash { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 32px; }
+.dash-header { text-align: center; }
+.dash-badge { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 3px; text-transform: uppercase; font-family: var(--mono); margin-bottom: 8px; }
+.dash-title { font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+.dash-sub { font-size: 13px; color: var(--txt2); max-width: 560px; }
+.module-cards { display: grid; grid-template-columns: repeat(3, 240px); gap: 16px; }
+.module-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px; cursor: pointer; transition: all .18s; position: relative; overflow: hidden;
+}
+.module-card:hover { transform: translateY(-2px); border-color: var(--card-color, var(--accent)); box-shadow: 0 0 20px var(--card-color,var(--accent))22; }
+.module-card .mc-icon { font-size: 28px; margin-bottom: 10px; }
+.module-card .mc-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.module-card .mc-desc { font-size: 11px; color: var(--txt2); line-height: 1.6; }
+.module-card .mc-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+
+/* ── Badge ───────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ── Progress label ──────────────────────────────────────────────────────── */
+.progress-lbl { font-size: 11px; color: var(--txt2); min-height: 18px; }
+
+/* ── List ────────────────────────────────────────────────────────────────── */
+.path-list { list-style: none; padding: 0; max-height: 160px; overflow-y: auto; }
+.path-list li { padding: 5px 8px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--txt2); }
+.path-list li:last-child { border-bottom: none; }
+
+/* ── Timetable entry list ────────────────────────────────────────────────── */
+.entry-list { list-style: none; max-height: 120px; overflow-y: auto; }
+.entry-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 8px; border-bottom: 1px solid var(--border); font-size: 12px;
+}
+.entry-item:last-child { border-bottom: none; }
+
+/* ── Status bar ──────────────────────────────────────────────────────────── */
+.statusbar {
+  height: 26px; min-height: 26px;
+  background: var(--bg-panel); border-top: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 16px;
+  font-size: 11px; color: var(--txt2); font-family: var(--mono);
+}
+
+/* ── Misc ────────────────────────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 6px 0; }
+.muted { color: var(--txt2); font-size: 11px; }
+.mt4 { margin-top: 4px; } .mt8 { margin-top: 8px; } .mt12 { margin-top: 12px; }
+.flex-col { display: flex; flex-direction: column; gap: 8px; }
+.flex { display: flex; gap: 8px; align-items: center; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Hamburger button (mobile only) ──────────────────────────────────────── */
+.hamburger {
+  display: none; background: none; border: none;
+  color: var(--txt); font-size: 22px; cursor: pointer; padding: 4px 8px;
+  line-height: 1;
+}
+
+/* ── Sidebar overlay backdrop ────────────────────────────────────────────── */
+.sidebar-backdrop {
+  display: none; position: fixed; inset: 0; background: #000a; z-index: 99;
+}
+
+/* ── Tablet (≤ 960px) — narrow sidebar ───────────────────────────────────── */
+@media (max-width: 960px) {
+  .sidebar { width: 180px; min-width: 180px; }
+  .nav-btn  { padding: 9px 12px; font-size: 12px; }
+  .module-ctrl { width: 230px; min-width: 230px; }
+}
+
+/* ── Mobile (≤ 700px) — overlay sidebar, stacked modules ─────────────────── */
+@media (max-width: 700px) {
+  .hamburger { display: block; }
+
+  .sidebar {
+    position: fixed; left: -220px; top: 0; bottom: 0; z-index: 100;
+    width: 220px; min-width: 220px;
+    transition: left .25s ease; box-shadow: 2px 0 16px #0008;
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-backdrop.open { display: block; }
+
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar-sub { display: none; }
+
+  .page { padding: 10px; }
+
+  /* Stack module visualization above controls */
+  .module {
+    flex-direction: column;
+    height: auto; min-height: 0;
+  }
+  .module-viz  { min-height: 320px; }
+  .module-ctrl { width: 100%; min-width: 0; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  .module-ctrl > * { flex: 1 1 140px; }
+  .module-ctrl > h3,
+  .module-ctrl > p { flex: 0 0 100%; }
+
+  /* Dashboard: 2 columns → 1 column */
+  .module-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .dash { padding: 24px 12px; gap: 20px; }
+  .dash-title { font-size: 26px; }
+
+  /* Stat row wraps */
+  .stat-row { gap: 6px; }
+  .stat-card { min-width: 75px; padding: 6px 8px; }
+  .stat-value { font-size: 16px; }
+
+  /* Tables scrollable on mobile */
+  .tbl-wrap { overflow-x: auto; }
+}
+
+@media (max-width: 420px) {
+  .module-cards { grid-template-columns: 1fr; }
+  .ttt-board { width: min(280px, 90vw) !important; height: min(280px, 90vw) !important; }
+  .puzzle-area { max-width: 90vw; }
+}
+
+/* ── TicTacToe board — explicit sizing ───────────────────────────────────── */
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows:    repeat(3, 1fr);
+  gap: 8px;
+  width: min(360px, 85vw);
+  height: min(360px, 85vw);
+  flex-shrink: 0;
+}
+.ttt-cell {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card); border: 2px solid var(--border);
+  border-radius: 14px; cursor: pointer; transition: all .12s;
+  font-size: clamp(32px, 10vw, 56px); font-weight: 900;
+  user-select: none;
+}
+.ttt-cell:hover:not(.taken) { background: var(--bg-hover); border-color: var(--accent); }
+.ttt-cell.x   { color: var(--orange); }
+.ttt-cell.o   { color: var(--accent); }
+.ttt-cell.win { border-color: var(--yellow) !important; background: #2E2A0088; }
+.ttt-cell.taken { cursor: default; }
+
+/* ── Route SVG responsive ────────────────────────────────────────────────── */
+.graph-svg-wrap { flex: 1; min-height: 280px; }
+
+/* ── Puzzle board responsive ─────────────────────────────────────────────── */
+.puzzle-area {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 12px; flex: 1;
+}
+
+/* ── Timetable grid display ──────────────────────────────────────────────── */
+.tt-grid-wrap { overflow: auto; border-radius: 8px; border: 1px solid var(--border); }
+.tt-grid { border-collapse: collapse; min-width: 600px; }
+.tt-grid th {
+  background: var(--bg-hover); color: var(--txt2); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px;
+  border: 1px solid var(--border); text-align: center; white-space: nowrap;
+}
+.tt-grid td {
+  border: 1px solid var(--border); padding: 0;
+  vertical-align: top; min-width: 90px;
+}
+.tt-cell {
+  padding: 6px 8px; min-height: 52px; display: flex;
+  flex-direction: column; justify-content: center; gap: 2px;
+}
+.tt-cell-subj { font-size: 11px; font-weight: 700; }
+.tt-cell-teacher { font-size: 10px; opacity: .75; }
+.tt-cell-room { font-size: 9px; opacity: .6; font-family: var(--mono); }
+.tt-break {
+  background: #1a1f27; color: var(--txt3); font-size: 10px;
+  text-align: center; padding: 4px; letter-spacing: 1px; text-transform: uppercase;
+}
+.tt-time { font-size: 10px; color: var(--txt3); font-family: var(--mono); white-space: nowrap; padding: 4px 8px; background: var(--bg-hover); }
+
+/* ── Progress overlay ────────────────────────────────────────────────────── */
+.solving-overlay {
+  position: absolute; inset: 0; background: #0d111788; backdrop-filter: blur(3px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; border-radius: 10px; z-index: 10;
+}
+.solving-spinner {
+  width: 48px; height: 48px; border: 4px solid var(--border);
+  border-top-color: var(--purple); border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NEW GAME MODULES
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── N-Queens queen pulse animation ──────────────────────────────────────── */
+@keyframes pulse {
+  0%   { transform:scale(1);   }
+  50%  { transform:scale(1.3); }
+  100% { transform:scale(1);   }
+}
+
+/* ── Scheduler timeline ──────────────────────────────────────────────────── */
+.timeline-wrap { overflow-x:auto; border-radius:8px; border:1px solid var(--border); }
+
+/* ── Sudoku box border helper (applied inline, CSS var for easy theming) ── */
+.sudoku-box-top    { border-top:2px solid #58A6FF44 !important; }
+.sudoku-box-left   { border-left:2px solid #58A6FF44 !important; }
+
+/* ── Responsive adjustments for new modules ──────────────────────────────── */
+@media (max-width:700px) {
+  /* N-Queens: smaller cells on mobile */
+  .module-viz svg { max-width:100%; }
+
+  /* Sudoku: scale down */
+  .module-viz { overflow-x:auto; }
+
+  /* Tango: scroll if needed */
+  .module-viz { overflow-x:auto; }
+
+  /* Dashboard sections stack nicely */
+  .dash { padding:20px 10px; gap:24px; }
+}
+
+/* ── Shikaku rect colors fade-in ─────────────────────────────────────────── */
+@keyframes fadeRect {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+
+/* ── Tango violation shake ───────────────────────────────────────────────── */
+@keyframes shake {
+  0%,100% { transform:translateX(0); }
+  25%     { transform:translateX(-4px); }
+  75%     { transform:translateX(4px); }
+}
+.tango-violation { animation:shake .25s ease; }
