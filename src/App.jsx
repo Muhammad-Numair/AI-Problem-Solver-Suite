@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import Dashboard          from './components/Dashboard.jsx'
 import MazeSolver         from './modules/MazeSolver.jsx'
 import SlidingPuzzle      from './modules/SlidingPuzzle.jsx'
@@ -74,51 +75,54 @@ export default function App() {
   const current = PAGES.find(p=>p.id===page)
 
   return (
-    <div className="app">
-      {/* Mobile backdrop */}
-      <div className={`sidebar-backdrop${sideOpen?' open':''}`}
-           onClick={()=>setSide(false)} />
+    <>
+      <div className="app">
+        {/* Mobile backdrop */}
+        <div className={`sidebar-backdrop${sideOpen?' open':''}`}
+             onClick={()=>setSide(false)} />
 
-      {/* Sidebar */}
-      <nav className={`sidebar${sideOpen?' open':''}`}>
-        <div className="sidebar-logo"><span>🧠</span> AI Suite</div>
+        {/* Sidebar */}
+        <nav className={`sidebar${sideOpen?' open':''}`}>
+          <div className="sidebar-logo"><span>🧠</span> AI Suite</div>
 
-        {/* Dashboard */}
-        <button
-          className={`nav-btn${page==='dashboard'?' active':''}`}
-          style={page==='dashboard'?{color:'#8B949E',borderLeftColor:'#8B949E'}:{}}
-          onClick={()=>navigate('dashboard')}>
-          <span className="icon">🏠</span> Dashboard
-        </button>
+          {/* Dashboard */}
+          <button
+            className={`nav-btn${page==='dashboard'?' active':''}`}
+            style={page==='dashboard'?{color:'#8B949E',borderLeftColor:'#8B949E'}:{}}
+            onClick={()=>navigate('dashboard')}>
+            <span className="icon">🏠</span> Dashboard
+          </button>
 
-        {SECTIONS.map(sec=>(
-          <div key={sec.label} className="nav-section">
-            <div className="nav-label">{sec.label}</div>
-            {PAGES.filter(p=>sec.ids.includes(p.id)).map(p=>(
-              <button key={p.id}
-                className={`nav-btn${page===p.id?' active':''}`}
-                style={page===p.id?{color:p.color,borderLeftColor:p.color}:{}}
-                onClick={()=>navigate(p.id)}>
-                <span className="icon">{p.icon}</span>{p.label}
-              </button>
-            ))}
+          {SECTIONS.map(sec=>(
+            <div key={sec.label} className="nav-section">
+              <div className="nav-label">{sec.label}</div>
+              {PAGES.filter(p=>sec.ids.includes(p.id)).map(p=>(
+                <button key={p.id}
+                  className={`nav-btn${page===p.id?' active':''}`}
+                  style={page===p.id?{color:p.color,borderLeftColor:p.color}:{}}
+                  onClick={()=>navigate(p.id)}>
+                  <span className="icon">{p.icon}</span>{p.label}
+                </button>
+              ))}
+            </div>
+          ))}
+
+          <div className="sidebar-footer">v1.0 · 11 modules</div>
+        </nav>
+
+        {/* Main */}
+        <div className="main">
+          <div className="topbar">
+            <button className="hamburger" onClick={()=>setSide(s=>!s)}>☰</button>
+            <span style={{fontSize:18}}>{current?.icon}</span>
+            <span className="topbar-title">{current?.label}</span>
+            <span className="topbar-sub">— {SUBTITLES[page]}</span>
           </div>
-        ))}
-
-        <div className="sidebar-footer">v1.0 · 11 modules</div>
-      </nav>
-
-      {/* Main */}
-      <div className="main">
-        <div className="topbar">
-          <button className="hamburger" onClick={()=>setSide(s=>!s)}>☰</button>
-          <span style={{fontSize:18}}>{current?.icon}</span>
-          <span className="topbar-title">{current?.label}</span>
-          <span className="topbar-sub">— {SUBTITLES[page]}</span>
+          <div className="page">{COMPONENTS[page]}</div>
+          <div className="statusbar">{status}</div>
         </div>
-        <div className="page">{COMPONENTS[page]}</div>
-        <div className="statusbar">{status}</div>
       </div>
-    </div>
+      <Analytics />
+    </>
   )
 }
