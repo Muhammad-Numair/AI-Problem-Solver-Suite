@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import Dashboard from './components/Dashboard.jsx'
 import MazeSolver from './modules/MazeSolver.jsx'
 import SlidingPuzzle from './modules/SlidingPuzzle.jsx'
@@ -121,6 +122,7 @@ export default function App() {
                 <div className="statusbar">{status}</div>
             </div>
             <Analytics />
+            <SpeedInsights />
         </div>
     )
 }
